@@ -2,7 +2,7 @@ import { ActivityIndicator, FlatList, Image, Text, View } from 'react-native';
 import React, { useEffect, useMemo, useState } from 'react';
 import { images } from '@/constants/images';
 import { useFetchMoviesQuery } from '@/services/movieApi';
-import { updateSearchCount } from '@/services/appwrite';
+import { updateSearchCount } from '@/services/appwrite_db';
 import { MovieCard, SearchBar } from '@/components';
 import { icons } from '@/constants/icons';
 import { getErrorMessage } from '@/utilities';

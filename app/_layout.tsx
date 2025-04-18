@@ -15,8 +15,7 @@ function ProtectedLayout() {
     const isSignInScreen = segments.join('/') === 'signin';
     if (!isAuthenticated && inAuthGroup) {
       // Redirect to sign-in if trying to access protected routes
-      // @ts-ignore
-      router.replace('signin');
+      router.replace('/signin');
     } else if (isAuthenticated && isSignInScreen) {
       // Redirect to home if authenticated and trying to access sign-in
       router.replace('/(tabs)');

@@ -5,7 +5,7 @@ import { images } from '@/constants/images';
 import { icons } from '@/constants/icons';
 import { MovieCard, SearchBar, TrendingCard } from '@/components';
 import { useFetchMoviesQuery } from '@/services/movieApi';
-import { getTrendingMovies } from '@/services/appwrite';
+import { getTrendingMovies } from '@/services/appwrite_db';
 import useFetch from '@/hooks/useFetch';
 import { getErrorMessage } from '@/utilities';
 import ScrollView = Animated.ScrollView;
