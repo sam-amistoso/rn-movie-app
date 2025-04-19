@@ -1,43 +1,19 @@
-import { useEffect } from 'react';
-import { Stack, useRouter, useSegments } from 'expo-router';
-import { Provider, useSelector } from 'react-redux';
+import React from 'react';
+import { Provider } from 'react-redux';
 import { StatusBar } from 'react-native';
-import { RootState, store } from '@/store';
+import { store } from '@/store';
 import './globals.css';
+import { Stack } from 'expo-router';
 
-function ProtectedLayout() {
-  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
-  const segments = useSegments();
-  const router = useRouter();
-
-  useEffect(() => {
-    const inAuthGroup = segments[0] === '(tabs)' || segments[0] === 'movies';
-    const isSignInScreen = segments.join('/') === 'signin';
-    if (!isAuthenticated && inAuthGroup) {
-      // Redirect to sign-in if trying to access protected routes
-      router.replace('/signin');
-    } else if (isAuthenticated && isSignInScreen) {
-      // Redirect to home if authenticated and trying to access sign-in
-      router.replace('/(tabs)');
-    }
-  }, [isAuthenticated, segments, router]);
-
-  return (
-    <>
-      <StatusBar hidden={true} />
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
-        <Stack.Screen name='movies/[id]' options={{ headerShown: false }} />
-        <Stack.Screen name='signin' options={{ headerShown: false }} />
-      </Stack>
-    </>
-  );
-}
-
-export default function RootLayout() {
+const RootLayout = () => {
   return (
     <Provider store={store}>
-      <ProtectedLayout />
+      <StatusBar hidden={true} />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name='(protected)' options={{ headerShown: false, animation: 'none' }} />
+        <Stack.Screen name='signin' options={{ headerShown: false, animation: 'none' }} />
+      </Stack>
     </Provider>
   );
-}
+};
+export default RootLayout;

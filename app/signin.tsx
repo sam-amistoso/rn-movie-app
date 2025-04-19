@@ -7,55 +7,43 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { useRouter } from 'expo-router';
 import { useAppDispatch } from '@/store/hooks';
 import { SET_AUTHENTICATED } from '@/store/auth/auth.actions';
-import { icons } from '@/constants/icons';
-import useFetch from '@/hooks/useFetch';
 import { createEmailPassword, getUserSession } from '@/services/appwrite_auth';
-import { useRouter } from 'expo-router';
+import { icons } from '@/constants/icons';
 
 const SignIn = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
-  const {
-    data: session,
-    error: sessionError,
-    loading: isSessionLoading,
-  } = useFetch(() => getUserSession());
-  console.log('🚀 SignIn session: ', session);
-  const {
-    data,
-    error: loginError,
-    loading: isLoading,
-    refetch,
-  } = useFetch(() => createEmailPassword({ email, password }), false);
-
-  useEffect(() => {
-    if (session) {
-      dispatch(SET_AUTHENTICATED({ user: { email: session.email } }));
-      router.replace('/(tabs)');
-    }
-  }, [session]);
-
-  useEffect(() => {
-    if (!isLoading && !loginError && data) {
-      console.log('🚀 SignIn data: ', data);
-      dispatch(SET_AUTHENTICATED({ user: { email } }));
-    }
-  }, [data, isLoading, loginError]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loginError, setLoginError] = useState(false);
 
   const handleSignIn = async () => {
     if (email && password) {
+      setIsLoading(true);
       try {
         // Trigger the authentication call
-        await refetch();
+        const user = await createEmailPassword({ email, password });
+        console.log('🚀 handleSignIn user: ', user);
+        if (user) {
+          // Fetch the session after successful sign-in
+          const session = await getUserSession();
+          if (session) {
+            console.log('🚀 handleSignIn session: ', session);
+            // Dispatch the authenticated action with user data
+            dispatch(SET_AUTHENTICATED({ user }));
+            router.replace('/');
+          }
+        }
       } catch (error) {
         console.error('Sign in failed:', error);
+        setLoginError(true);
       }
+      setIsLoading(false);
     }
   };
 
@@ -87,7 +75,6 @@ const SignIn = () => {
           {loginError && (
             <Text className='text-red-500 mt-3'>Login failed. Please check your credentials.</Text>
           )}
-          {sessionError && <Text className='text-red-500 mt-3'>Fetching session failed.</Text>}
           <TouchableOpacity
             disabled={isLoading}
             onPress={handleSignIn}

@@ -24,7 +24,7 @@ export const getUserSession = async () => {
     return await account.get();
   } catch (error) {
     console.error(error);
-    throw { error };
+    return Promise.reject(error);
   }
 };
 
